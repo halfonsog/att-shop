@@ -1,6 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CommissionController;
 
 // Public routes
 Route::get('/', function () {
@@ -62,7 +69,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/orders/{id}', 'show')->name('orders.show');
             Route::post('/orders/{id}/status', 'updateStatus')->name('orders.status');
         });
-
+        
         Route::controller(CommissionController::class)->group(function () {
             Route::get('/commissions', 'index')->name('commissions.index');
             Route::post('/commissions/{id}/pay', 'markAsPaid')->name('commissions.pay');

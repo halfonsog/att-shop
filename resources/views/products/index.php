@@ -11,7 +11,7 @@
             <li>
                 <?= htmlspecialchars($product->name) ?> - 
                 $<?= number_format($product->price, 2) ?>
-                <a href="<?= base_url('product/' . $product->id) ?>">View</a>
+                <a href="<?= att_shop_base_url('product/' . $product->id) ?>">View</a>
             </li>
         <?php endforeach; ?>
         </ul>
