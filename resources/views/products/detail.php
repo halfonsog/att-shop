@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <a href="/search?q=">Back to search</a>
+    <a href="javascript:history.back()">Back to search</a>
 
     <h1><?= htmlspecialchars($product->name) ?></h1>
     <p>Price: $<?= number_format($product->price, 2) ?></p>

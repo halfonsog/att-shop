@@ -1,8 +1,10 @@
-<html>
-<head>
-    <title>Products</title>
-</head>
-<body>
+<?php
+$title= "Products";
+
+include '../layouts/header.php';
+
+?>
+<div class="product-page">
     <h1>Available Products</h1>
     
     <?php if (!empty($products)): ?>
@@ -18,5 +20,5 @@
     <?php else: ?>
         <p>No products available</p>
     <?php endif; ?>
-</body>
-</html>
+</div>
+<?php include '../layouts/footer.php'; ?>
