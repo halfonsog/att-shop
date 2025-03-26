@@ -1,0 +1,1 @@
+"<?php namespace App\Http\Controllers; class AuthController {} class ProductController {} class CartController {} class CheckoutController {} class SupplierController {} class OrderController {} class CommissionController {}" 
