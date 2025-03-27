@@ -15,12 +15,12 @@ namespace App\Models{
 /**
  * 
  *
- * @property int $id
- * @property string $name
- * @property string $email
- * @property string $password
- * @property string $type
- * @property string|null $remember_token
+ * @property string $usr_id
+ * @property string $usr_pwd
+ * @property string|null $usr_type
+ * @property int|null $ent_id
+ * @property string|null $rep
+ * @property string|null $psw_hint
  * @property \Illuminate\Support\Carbon $created_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
@@ -29,12 +29,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEntId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePswHint($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRep($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrPwd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrType($value)
  */
 	class User extends \Eloquent {}
 }

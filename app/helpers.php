@@ -2,7 +2,7 @@
 
 function att_shop_base_url($path = '')
 {
-    return '/att-shop/public/' . ltrim($path, '/');
+    return '/att-shop/' . ltrim($path, '/');
 }
 
 function view_include($path, $data = []) {

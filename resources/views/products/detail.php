@@ -17,7 +17,8 @@
     <h3>Descripcion</h3>
     <p><?= nl2br(htmlspecialchars($product->description)) ?></p>
     <form action="<?=att_shop_base_url('/cart/add')?>" method="POST">
-        <input type="hidden" name="product_id" value="<?= $product->id ?>">
+    <?= csrf_field() ?>
+    <input type="hidden" name="product_id" value="<?= $product->id ?>">
         <button type="submit">Add to Cart</button>
     </form>
 </body>

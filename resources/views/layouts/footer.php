@@ -4,7 +4,7 @@
       <a href="/about">About Us</a>
       <a href="/contact">Contact</a>
     </div>
-    <p>© <?= date('Y') ?> ATT-Shop</p>
+    <p>© <?= date('Y') ?> Al-tin-tin Shop</p>
   </footer>
 </body>
 </html>

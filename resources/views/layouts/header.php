@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html>
+<meta charset="utf-8">
+<meta name="csrf-token" content="<?= csrf_token() ?>">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src *">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <head>
-  <title><?= $title ?? 'ATT-Shop' ?></title>
-  <link href="/css/amazon-style.css" rel="stylesheet">
-  <!-- Font Awesome for icons -->
+  <title><?= $title ?? 'Al-tin-tin Shop' ?></title>
+  <link rel="stylesheet" href="/lib/framework7/css/framework7.ios.min.css" />
+		<!--link rel="stylesheet" href="/lib/framework7.ios.colors.min.css"-->
+    <link rel="stylesheet" href="/lib/framework7-icons/css/framework7-icons.css" /> 
+    <link rel="stylesheet" href="/lib/att.css" /> 
 </head>
 <body>
   <header>

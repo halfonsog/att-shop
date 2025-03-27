@@ -3,8 +3,8 @@
     <title>404 Not Found</title>
 </head>
 <body>
-    <h1>Product Not Found</h1>
-    <p>The requested product does not exist.</p>
-    <a href="<?= base_url('products') ?>">Return to Products</a>
+    <h1>Page Not Found</h1>
+    <p>The requested page does not exist.</p>
+    <a href="<?= att_shop_base_url('') ?>">Return to Site Home</a>
 </body>
 </html>
