@@ -8,15 +8,15 @@
     <a href="javascript:history.back()">Back to search</a>
 
     <h1><?= htmlspecialchars($product->name) ?></h1>
-    <p>Price: $<?= number_format($product->price, 2) ?></p>
+    <p>Precio: $<?= number_format($product->price, 2) ?></p>
 
     <?php if ($product->image_path): ?>
         <img src="/images/<?= $product->image_path ?>" width="300">
     <?php endif; ?>
 
-    <h3>Description</h3>
+    <h3>Descripcion</h3>
     <p><?= nl2br(htmlspecialchars($product->description)) ?></p>
-    <form action="/cart/add" method="POST">
+    <form action="<?=att_shop_base_url('/cart/add')?>" method="POST">
         <input type="hidden" name="product_id" value="<?= $product->id ?>">
         <button type="submit">Add to Cart</button>
     </form>

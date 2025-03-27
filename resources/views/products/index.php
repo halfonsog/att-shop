@@ -1,7 +1,7 @@
 <?php
-$title= "Products";
-
-include '../layouts/header.php';
+view_include('layouts/header', [
+    'title' => 'Product Page', 'user' => currentUser()
+]);
 
 ?>
 <div class="product-page">
@@ -21,4 +21,4 @@ include '../layouts/header.php';
         <p>No products available</p>
     <?php endif; ?>
 </div>
-<?php include '../layouts/footer.php'; ?>
+<?php view_include('layouts/footer'); ?>
