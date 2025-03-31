@@ -2,20 +2,20 @@
 
 function att_shop_base_url($path = '')
 {
-    return '/att-shop/' . ltrim($path, '/');
+    return '/' . ltrim($path, '/');
 }
 
 function view_include($path, $data = []) {
     // 1. Extract array to variables
     extract($data);
     
-    // 2. Start output buffering (captures included content)
+    // 2. Start output buffering
     ob_start();
     
-    // 3. Include the file with the extracted variables
-    include $_SERVER['DOCUMENT_ROOT'] . '/att-shop/resources/views/' . $path . '.php';
+    // 3. Use Laravel's base path instead of DOCUMENT_ROOT
+    include base_path('resources/views/' . $path . '.php');
     
-    // 4. Return the buffered content if needed
+    // 4. Return the buffered content
     return ob_get_clean();
 }
 

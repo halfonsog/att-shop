@@ -3,11 +3,16 @@ DROP TABLE IF EXISTS commissions;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS warehouses_products;
 DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS suppliers;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS collection_points;
+DROP TABLE IF EXISTS warehouses;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS admins;
 DROP TABLE IF EXISTS suppliers;
+DROP TABLE IF EXISTS transporters;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS recipients;
 DROP TABLE IF EXISTS municipalities;
@@ -31,10 +36,11 @@ CREATE TABLE municipalities (
 );
 
 CREATE TABLE users (
-    usr_id VARCHAR(100) PRIMARY KEY,
+    usr_id VARCHAR(50) PRIMARY KEY,
     usr_pwd VARCHAR(255) NOT NULL,
     usr_type ENUM('customer','supplier','admin') DEFAULT 'customer',
     ent_id INT,
+    is_active BOOLEAN DEFAULT FALSE,
     rep ENUM('cfo','cco'),
     psw_hint VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -50,7 +56,8 @@ CREATE TABLE admins (
 
 CREATE TABLE suppliers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150),
+    title VARCHAR(150),
+    brand_name VARCHAR(50),
     cco_name VARCHAR(150),
     cco_phone VARCHAR(20),
     cfo_name VARCHAR(150),
@@ -83,31 +90,168 @@ CREATE TABLE recipients (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE departments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(50),
+    icon VARCHAR(50),
+    description VARCHAR(255)
+);
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    department_id INT,
+    parent_id INT NULL,
+    title VARCHAR(50),
+    icon VARCHAR(50),
+    description VARCHAR(255)
+);
+
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    supplier_id INT,
-    name VARCHAR(100) NOT NULL,
+    category_id INT,
+    warehouse_id INT,
+    title VARCHAR(100),
+    condition_pack ENUM('open','sealed', 'fragile'),
     description TEXT,
-    price DECIMAL(10,2) NOT NULL,
-    image_path VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+    base_price DECIMAL(10,2),
+    price DECIMAL(10,2),
+    clicks INT DEFAULT 0;
+    images INT DEFAULT 1,
+    gross_volume INT,
+    gross_weight INT,
+    is_promoted BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT FALSE,
+    active_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE prod_appliace (
+    product_id INT PRIMARY KEY,
+    voltage ENUM('110V','220V','Dual'),
+    power DECIMAL(10,2),
+    is_rechargeable BOOLEAN DEFAULT FALSE
+ );
+
+CREATE TABLE prod_computer (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT,
+    ram INT,
+    storage INT,
+    display INT,
+    camera INT DEFAULT 0,
+    device ENUM('server','desktop', 'laptop', 'tablet', 'phone'),
+    tech_base ENUM('windows','Apple', 'Linux', 'Android')
+);
+
+CREATE TABLE product_food (
+    product_id INT PRIMARY KEY,
+    min_weight INT,
+    condition_cool ENUM('fresh', 'cool', 'frozen')
+);
+
+CREATE TABLE product_types (
+    product_id INT PRIMARY KEY,
+
+);
+
+CREATE TABLE product_types (
+    product_id INT PRIMARY KEY,
+
+);
+
+CREATE TABLE product_types (
+    product_id INT PRIMARY KEY,
+
+);
+
+CREATE TABLE product_types (
+    product_id INT PRIMARY KEY,
+
+);
+
+CREATE TABLE product_types (
+    product_id INT PRIMARY KEY,
+
+);
+
+CREATE TABLE price_history (
+    id INT PRIMARY KEY,
+    product_id INT,
+    old_price DECIMAL(10,2),
+    new_price DECIMAL(10,2),
+    changed_by VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stock_history (
+    id INT PRIMARY KEY,
+    warehouse_id INT,
+    product_id INT,
+    old_stock INT,
+    new_stock INT,
+    change_reason ENUM('restock', 'adjustment', 'expiration'),
+    changed_by VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE warehouses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_id INT,
+    title VARCHAR(100),
+    municipality INT,
+    addr1 VARCHAR (100),
+    addr2 VARCHAR (100)
+);
+
+CREATE TABLE collection_points (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_id INT,
+    title VARCHAR(100),
+    municipality INT,
+    addr1 VARCHAR (100),
+    addr2 VARCHAR (100)
+);
+
+CREATE TABLE warehouses_products (
+    warehouse_id INT,
+    product_id INT,
+    stock INT,
+    pickup_ddr VARCHAR (255)
+);
+
+CREATE TABLE Transporters (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_id INT,
+    title VARCHAR(100),
+    phone INT,
+    municipality INT,
+    fresh_volume INT,
+    fresh_weight INT,
+    fresh_rate DECIMAL(10,2),
+    cool_volume INT,
+    cool_weight INT,
+    cool_rate DECIMAL(10,2),
+    frozen_volume INT,
+    frozen_weight INT,
+    frozen_rate DECIMAL(10,2),
+    fresh_municipalities VARCHAR(100),
+    cool_municipalities VARCHAR(100),
+    frozen_municipalities VARCHAR(100)
+ );
 
 CREATE TABLE cart_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     session_id VARCHAR(255) NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    product_id INT,
+    quantity INT DEFAULT 1,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_name VARCHAR(100) NOT NULL,
-    customer_email VARCHAR(100) NOT NULL,
-    total DECIMAL(10,2) NOT NULL,
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(100),
+    total DECIMAL(10,2),
     commission DECIMAL(10,2) DEFAULT 0,
     supplier_payment DECIMAL(10,2) DEFAULT 0,
     status VARCHAR(20) DEFAULT 'pending',
@@ -116,23 +260,19 @@ CREATE TABLE orders (
 
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10,2)
 );
 
 CREATE TABLE commissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
+    order_id INT,
+    supplier_id INT,
+    amount DECIMAL(10,2),
     status ENUM('pending','paid') DEFAULT 'pending',
-    payment_date TIMESTAMP NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+    payment_date TIMESTAMP NULL
 );
 
 CREATE TABLE paymethods (
@@ -142,6 +282,28 @@ CREATE TABLE paymethods (
     commission DECIMAL(10,2),
     logo VARCHAR(255)
 );
+
+INSERT INTO departments (id,title,icon,description) VALUES
+(1, 'Alimentos', 'dep_food', 'Alimentos frescos y procesados'),
+(2, 'Electrónica', 'dep_elctronic', 'Equipos eléctricos, informáticos, telecomunicaciones y electrodomésticos'),
+(3, 'Ferretería', 'dep_hardware', 'Materiales, herramientas y equipos para todo tipo de reparaciones o construcciones'),
+(4, 'Moda', 'dep_hardware', 'Materiales, herramientas y equipos para todo tipo de reparaciones o construcciones'),
+(5, 'Parafarmacia', 'dep_parapharmacy', 'Productos de higiene personal, cosmética y perfumería'),
+(6, 'Hogar', 'dep_home', 'Limpieza e higiene del hogar, jardinería, muebles, decoración...');
+
+
+INSERT INTO categories (id,department_id,parent_id,title,icon,description) VALUES
+(1,  1, null, 'Cárnicos', 'cat_meats','Carnes y productos cárnicos, así como frutos del mar'),
+(2,  1, null, 'Bebidas', 'cat_beberages','Bebidas naturales e industriales'),
+(3,  1, null, 'Salsas', 'cat_sauces','Salsas para cocinar y para llevar directamente a la mesa'),
+(4,  1, null, 'Frescos del campo', 'cat_fresh','Productos agícolas recien traidos del campo'),
+(5,  1, null, 'De la granja', 'cat_farm','Productos láteos y huevos'),
+(6,  1, null, 'Panadería', 'cat_bakery','Productos horneados tanto salados como dulses'),
+(7,  1, null, 'Pre/elaborados', 'cat_processed', 'Productos agícolas pre-elaborados y elaborados'),
+(8,  2, null, 'Electrodomésticos', 'cat_appliances','decripcion'),
+(9,  2, null, 'Informática', 'cat_it','Computadoras profesionales y para la casa, equipos de comunicaciones móviles e Internet'),
+(10, 2, null, 'Sistemas fotovoltaicos', 'cat_solar','Sistemas de degeneración eléctrica mediante paneles solares. Uso residencial y profesional');
+
 
 INSERT INTO paymethods (id,mode,name,commission,logo) VALUES
 (1, 'card', 'Visa', 2.99, 'images/paylogos/visa.png'),

@@ -9,6 +9,10 @@ class CartController extends Controller
 {
   public function add(Request $request)
   {
+    if (session('usr_type') === 'supplier') {
+      abort(403, 'Suppliers cannot place orders');
+    }
+
     $productId = $request->input('product_id');
     $sessionId = session()->getId();
 

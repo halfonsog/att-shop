@@ -7,4 +7,6 @@
     <p>© <?= date('Y') ?> Al-tin-tin Shop</p>
   </footer>
 </body>
+  <script type="text/javascript" src="/lib/jquery.js"></script>
+  <script type="text/javascript" src="/js/att.js"></script>
 </html>

@@ -76,4 +76,16 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/commissions/process-payments', 'processMonthlyPayments')->name('commissions.process');
         });
     });
+
+    // Supplier routes
+    Route::prefix('supplier')->middleware(['auth', 'supplier'])->group(function () {
+        Route::get('/dashboard', [SupplierController::class, 'dashboard']);
+
+    });
+
+    // Customer routes
+    Route::middleware(['auth', 'customer'])->group(function () {
+        Route::post('/cart/add', [CartController::class, 'add']);
+
+    });
 });
