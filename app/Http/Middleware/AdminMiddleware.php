@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (session('usr_type') !== 'admin') {
+        if (!str_ends_with(session('role'), 'admin')) {
             abort(403, 'Unauthorized access');
         }
 

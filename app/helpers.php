@@ -26,7 +26,8 @@ function currentUser() {
     $user = $_SESSION['user'];
     
     // Fetch additional details from DB if needed
-    $entity= (array) DB::selectOne("SELECT * FROM {$user['usr_type']}s WHERE id = ?", [$user['ent_id']]);
+    $table= (str_ends_with($user->role,'admin') ?'admins' :$user->role .'s');
+    $entity= (array) DB::selectOne("SELECT * FROM {$table} WHERE id = ?", [$user->ent_id]);  // [$user['ent_id']]);
 
     return array_merge($user, $entity);
 /*    

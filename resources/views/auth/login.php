@@ -7,7 +7,8 @@
     <?php endif; ?>
     
     <form action="/login" method="POST">
-        <label>Email:</label>
+        <?= csrf_field() ?>
+       <label>Email:</label>
         <input type="email" name="usr" required>
         
         <label>Contraseña:</label>

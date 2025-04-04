@@ -22,4 +22,10 @@ class Authenticate
 
         return $next($request);
     }
+
+    // Redirect to /login if unauthorized
+    protected function redirectTo($request)
+    {
+        return route('login');
+    }
 }

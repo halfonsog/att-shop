@@ -9,7 +9,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        if (session('user_type') !== 'admin') {
+        if (session('role') !== 'admin') {
             abort(403);
         }
         
@@ -26,7 +26,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        if (session('user_type') !== 'admin') {
+        if (session('role') !== 'admin') {
             abort(403);
         }
         
@@ -46,7 +46,7 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        if (session('user_type') !== 'admin') {
+        if (session('role') !== 'admin') {
             abort(403);
         }
         

@@ -8,5 +8,6 @@
   </footer>
 </body>
   <script type="text/javascript" src="/lib/jquery.js"></script>
+  <script type="text/javascript" src="/lib/bootstrap-5.3.3/bootstrap.min.js"></script>
   <script type="text/javascript" src="/js/att.js"></script>
 </html>

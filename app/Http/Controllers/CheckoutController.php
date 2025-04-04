@@ -90,12 +90,8 @@ class CheckoutController extends Controller
             INSERT INTO commissions (order_id, supplier_id, amount) VALUES (?, ?, ?)", [$orderId, $item->supplier_id, $commissionAmount]);
 
             // Update order totals
-            DB::update("
-    UPDATE orders 
-    SET commission = commission + ?,
-        supplier_payment = supplier_payment + ?
-    WHERE id = ?
-", [$commissionAmount, $supplierAmount, $orderId]);
+            DB::update("UPDATE orders SET commission = commission + ?, supplier_payment = supplier_payment + ? WHERE id = ?",
+            [$commissionAmount, $supplierAmount, $orderId]);
         }
     }
 }

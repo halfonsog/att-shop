@@ -13,6 +13,12 @@ class SupplierController extends Controller
         return view('suppliers/index', ['suppliers' => $suppliers]);
     }
 
+    public function pendingApproval()
+    {
+        $suppliers = DB::select("SELECT * FROM suppliers WHERE is_approved=0");
+        return $suppliers;
+    }
+
     public function show($id)
     {
         $supplier = DB::selectOne("SELECT * FROM suppliers WHERE id = ?", [$id]);

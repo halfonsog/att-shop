@@ -3,6 +3,7 @@
     <h1>Register</h1>
     
     <form action="/register" method="POST">
+        <?= csrf_field() ?>
         <label>Nombre completo:</label>
         <input type="text" name="name" required>
         
@@ -20,7 +21,7 @@
         
         <label>Pais de residencia:</label>
         <select name="country">
-        <?php
+<?php
  use Illuminate\Support\Facades\DB; 
  $Items = DB::select("SELECT * FROM countries"); 
  foreach ($items as $item): ?>

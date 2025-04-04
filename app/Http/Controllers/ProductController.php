@@ -8,23 +8,28 @@ use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
     public function index()
-{
-    
-    $products = DB::select("SELECT * FROM products");
-    return view('products.index', compact('products'));
-}
+    {
+        $products = DB::select("SELECT * FROM products");
+        return view('products.index', compact('products'));
+    }
+
+    public function approve($id)
+    {
+        $updated = DB::select("UPDATE FROM products SET is_active=1 WHERE id=?", [$id]);
+        response()->json(['success' => ($updated == 1) ?true :false]);
+    }
 
     public function search(Request $request)
     {
         $searchTerm = $request->input('q', '');
-        
+
         $products = DB::select("
             SELECT id, name, price, image_path 
             FROM products 
             WHERE name LIKE ? OR description LIKE ?
             ORDER BY name
         ", ["%{$searchTerm}%", "%{$searchTerm}%"]);
-        
+
         return view('products/list', [
             'products' => $products,
             'searchTerm' => $searchTerm
@@ -36,19 +41,19 @@ class ProductController extends Controller
         $product = DB::selectOne("
             SELECT * FROM products WHERE id = ?
         ", [$id]);
-        
+
         if (!$product) {
- //           abort(404); // Show 404 page if product not found
+            //           abort(404); // Show 404 page if product not found
             header("HTTP/1.0 404 Not Found");
             return require_once resource_path('views/errors/404.php');
         }
-        
+
         return view('products/detail', ['product' => $product]);
     }
 
     public function manage()
     {
-        if (session('user_type') !== 'supplier') {
+        if (session('role') !== 'supplier') {
             abort(403);
         }
 
@@ -64,7 +69,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        if (session('user_type') !== 'supplier') {
+        if (session('role') !== 'supplier') {
             abort(403);
         }
 
@@ -73,7 +78,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        if (session('user_type') !== 'supplier') {
+        if (session('role') !== 'supplier') {
             abort(403);
         }
 

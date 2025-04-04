@@ -9,25 +9,26 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth/login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        $user = DB::selectOne("SELECT * FROM users WHERE usr_id = ?", [$request->usr]);
+        $user = DB::selectOne("SELECT * FROM users WHERE usr = ?", [$request->usr]);
         
-        if (!$user || !Hash::check($request->psw, $user->usr_psw)) {
+        if (!$user || !Hash::check($request->psw, $user->usr_psw)) {    //!password_verify($request->psw, $user->pwd)){
             return back()->with('error', 'Invalid credentials');
         }
-        
-        session(['usr_id' => $user->usr_id, 'usr_type' => $user->usr_type, 'ent_id' => $user->ent_id]);
-        
+        $table= (str_ends_with($user->role,'admin') ?'admins' :$user->role .'s');
+        $ent= DB::selectOne("SELECT * FROM " .$table." WHERE id = ?", [$user->ent_id]);
+
+        session(['usr' => $user->usr, 'role' => $ent->role, 'ent_id' => $user->ent_id, 'permission' => $ent->permission, 'name' => $ent->name]);      
         return redirect('/')->with('success', 'Logged in!');
     }
 
     public function showRegister()
     {
-        return view('auth/register');
+        return view('auth.register');
     }
 
     public function register(Request $request)
@@ -41,16 +42,18 @@ class AuthController extends Controller
                 'phone' => 'required|regex:regex:/^+?\d{7,15}$/',
                 'country' => 'required|integer'
             ]);
+        } else{
+            return back()->with('error', 'Invalid registration');
         }
         DB::beginTransaction();
-        try {
+        try { 
             $customerId = DB::table('customers')->insertGetId([
                 'name' => $request->input('name'),
                 'phone' => $request->input('phone'),
                 'country' => $request->input('country')
             ]);
-            DB::insert("INSERT INTO users (usr_id, ent_id, usr_psw, psw_hint) VALUES (?, ?, ?, ?)", 
-            [$request->input('usr'), $customerId, Hash::make($request->input('psw')), $request->input('psw_hint')]);           
+            DB::insert("INSERT INTO users (usr, psw, ent_id, role, is_active, psw_hint) VALUES (?, ?, ?, ?)", 
+            [$request->input('usr'), Hash::make($request->input('psw')), $customerId, 'customer', TRUE, $request->input('psw_hint')]);           
             DB::commit();
 
             return redirect('/login')->with('success', 'Registration complete!');
@@ -63,7 +66,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        session()->forget(['user_id', 'user_type']);
+        app('auth')->logout();
         return redirect('/')->with('success', 'Logged out');
     }
 }

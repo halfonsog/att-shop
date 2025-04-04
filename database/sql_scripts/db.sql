@@ -3,8 +3,17 @@ DROP TABLE IF EXISTS commissions;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS warehouses_products;
+DROP TABLE IF EXISTS warehouse_products;
+DROP TABLE IF EXISTS product_types;
+DROP TABLE IF EXISTS prod_food;
+DROP TABLE IF EXISTS prod_beverages;
+DROP TABLE IF EXISTS prod_appliances;
+DROP TABLE IF EXISTS prod_generators;
+DROP TABLE IF EXISTS prod_computers;
+DROP TABLE IF EXISTS price_history;
+DROP TABLE IF EXISTS stock_history;
 DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS department_categories;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS collection_points;
@@ -18,6 +27,8 @@ DROP TABLE IF EXISTS recipients;
 DROP TABLE IF EXISTS municipalities;
 DROP TABLE IF EXISTS provinces;
 DROP TABLE IF EXISTS countries;
+DROP VIEW IF EXISTS department_categories_view;
+DROP VIEW IF EXISTS category_products_view;
 
 CREATE TABLE countries (
     id INT PRIMARY KEY,
@@ -36,12 +47,12 @@ CREATE TABLE municipalities (
 );
 
 CREATE TABLE users (
-    usr_id VARCHAR(50) PRIMARY KEY,
-    usr_pwd VARCHAR(255) NOT NULL,
-    usr_type ENUM('customer','supplier','admin') DEFAULT 'customer',
+    usr VARCHAR(50) PRIMARY KEY,
+    psw VARCHAR(255) NOT NULL,
     ent_id INT,
+    role ENUM('customer','supplier','transporter','admin','super_admin') DEFAULT 'customer',
     is_active BOOLEAN DEFAULT FALSE,
-    rep ENUM('cfo','cco'),
+    rep ENUM('cfo','cco') DEFAULT NULL,
     psw_hint VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -49,7 +60,7 @@ CREATE TABLE users (
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150),
-    role ENUM('commercial','it','business'),
+    permissions JSON DEFAULT NULL COMMENT 'Admin permissions',
     phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -63,7 +74,8 @@ CREATE TABLE suppliers (
     cfo_name VARCHAR(150),
     cfo_phone VARCHAR(20),
     municipality INT,
-    since INT,
+    is_approved BOOLEAN DEFAULT FALSE,
+    since TIMESTAMP,
     web VARCHAR(250),
     contract VARCHAR(20),
     wallet DECIMAL(10,2),
@@ -99,23 +111,31 @@ CREATE TABLE departments (
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    department_id INT,
     parent_id INT NULL,
     title VARCHAR(50),
-    icon VARCHAR(50),
     description VARCHAR(255)
 );
+
+CREATE TABLE department_categories (
+    department_id INT,
+    category_id INT,
+    icon VARCHAR(50),
+    PRIMARY KEY (department_id, category_id)
+);
+
 
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT,
-    warehouse_id INT,
+    type ENUM('generic','food','beverages','computers','appliances','generators'),
     title VARCHAR(100),
     condition_pack ENUM('open','sealed', 'fragile'),
+    source ENUM('local','import'),
     description TEXT,
     base_price DECIMAL(10,2),
     price DECIMAL(10,2),
-    clicks INT DEFAULT 0;
+    min_order INT DEFAULT 1,
+    clicks INT DEFAULT 0,
     images INT DEFAULT 1,
     gross_volume INT,
     gross_weight INT,
@@ -125,14 +145,14 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE prod_appliace (
+CREATE TABLE prod_appliances (
     product_id INT PRIMARY KEY,
     voltage ENUM('110V','220V','Dual'),
     power DECIMAL(10,2),
     is_rechargeable BOOLEAN DEFAULT FALSE
  );
 
-CREATE TABLE prod_computer (
+CREATE TABLE prod_computers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
     ram INT,
@@ -143,35 +163,32 @@ CREATE TABLE prod_computer (
     tech_base ENUM('windows','Apple', 'Linux', 'Android')
 );
 
-CREATE TABLE product_food (
+CREATE TABLE prod_food (
     product_id INT PRIMARY KEY,
-    min_weight INT,
+    content_value DECIMAL(10,2),
+    content_unit ENUM('g', 'oz', 'lb', 'kg'),
     condition_cool ENUM('fresh', 'cool', 'frozen')
 );
 
-CREATE TABLE product_types (
+CREATE TABLE prod_beverages (
     product_id INT PRIMARY KEY,
+    content_value DECIMAL(10,2),
+    content_unit ENUM('ml', 'fl-oz', 'l', 'gallon'),
+    condition_cool ENUM('fresh', 'cool')
+);
 
+CREATE TABLE prod_generators (
+    product_id INT PRIMARY KEY,
+    fuel ENUM('sun','air','diesel', 'petrol', 'gas', 'petrol-gas'),
+    power_out INT,
+    power_pick INT,
+    voltage ENUM('110V','220V 2-phase','220V','220V 3-phase','380V 3-phase')
 );
 
 CREATE TABLE product_types (
-    product_id INT PRIMARY KEY,
-
-);
-
-CREATE TABLE product_types (
-    product_id INT PRIMARY KEY,
-
-);
-
-CREATE TABLE product_types (
-    product_id INT PRIMARY KEY,
-
-);
-
-CREATE TABLE product_types (
-    product_id INT PRIMARY KEY,
-
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product VARCHAR(50),
+    categories VARCHAR(255)
 );
 
 CREATE TABLE price_history (
@@ -212,11 +229,11 @@ CREATE TABLE collection_points (
     addr2 VARCHAR (100)
 );
 
-CREATE TABLE warehouses_products (
+CREATE TABLE warehouse_products (
     warehouse_id INT,
     product_id INT,
     stock INT,
-    pickup_ddr VARCHAR (255)
+    PRIMARY KEY (warehouse_id, product_id)
 );
 
 CREATE TABLE Transporters (
@@ -283,26 +300,104 @@ CREATE TABLE paymethods (
     logo VARCHAR(255)
 );
 
+CREATE VIEW department_categories_view AS 
+SELECT 
+    d.id AS department_id,
+    d.title AS department_title,
+    d.icon AS department_icon,
+    c.id AS category_id,
+    c.title AS category_title,
+    c.description AS category_description,
+    dc.icon AS category_icon_in_department
+FROM 
+    departments d
+JOIN 
+    department_categories dc ON d.id = dc.department_id
+JOIN 
+    categories c ON dc.category_id = c.id
+ORDER BY 
+    d.title, c.title;
+
+CREATE VIEW category_products_view AS
+SELECT 
+    c.id AS category_id,
+    c.title AS category_title,
+    p.id AS product_id,
+    p.title AS product_title,
+    p.description AS product_description,
+    p.base_price,
+    p.price,
+    p.condition_pack,
+    p.clicks,
+    p.images,
+    p.is_promoted,
+    p.is_active,
+    pa.voltage,
+    pa.power,
+    pa.is_rechargeable
+FROM 
+    categories c
+JOIN 
+    products p ON c.id = p.category_id
+LEFT JOIN 
+    prod_appliances pa ON p.id = pa.product_id;
+
+
+INSERT INTO admins (id,name,permissions,phone) VALUES
+(1, 'Administrador general', '{"*": true}', '59874218');
+INSERT INTO users (usr, psw, ent_id, role) VALUES 
+('halfonsog@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 'super_admin' );
+
+
 INSERT INTO departments (id,title,icon,description) VALUES
 (1, 'Alimentos', 'dep_food', 'Alimentos frescos y procesados'),
 (2, 'Electrónica', 'dep_elctronic', 'Equipos eléctricos, informáticos, telecomunicaciones y electrodomésticos'),
 (3, 'Ferretería', 'dep_hardware', 'Materiales, herramientas y equipos para todo tipo de reparaciones o construcciones'),
 (4, 'Moda', 'dep_hardware', 'Materiales, herramientas y equipos para todo tipo de reparaciones o construcciones'),
 (5, 'Parafarmacia', 'dep_parapharmacy', 'Productos de higiene personal, cosmética y perfumería'),
-(6, 'Hogar', 'dep_home', 'Limpieza e higiene del hogar, jardinería, muebles, decoración...');
+(6, 'Hogar', 'dep_home', 'Limpieza e higiene del hogar, jardinería, muebles, electrodomésticos, decoración...');
 
+INSERT INTO categories (id,parent_id,title,description) VALUES
+(1,  null, 'Cárnicos','Carnes y productos cárnicos, así como frutos del mar'),
+(2,  null, 'Bebidas','Bebidas naturales e industriales'),
+(3,  null, 'Salsas','Salsas para cocinar y para llevar directamente a la mesa'),
+(4,  null, 'Frescos del campo','Productos agícolas recien traidos del campo'),
+(5,  null, 'De la granja','Productos láteos y huevos'),
+(6,  null, 'Panadería','Productos horneados tanto salados como dulses'),
+(7,  null, 'Pre/elaborados', 'Productos agícolas pre-elaborados y elaborados'),
+(8,  null, 'Electrodomésticos','decripcion'),
+(9,  null, 'Informática','Computadoras profesionales y para la casa, equipos de comunicaciones móviles e Internet'),
+(10, null, 'Generadores','Sistemas de degeneración eléctrica. Uso residencial y profesional'),
+(11, null, 'Aridos','Materiales para la construcción y el paisajismo'),
+(12, null, 'Cementos','Cementos y morteros'),
+(13, null, 'Herramientas','Todo tipo de herramientas de trabajo. Uso residencial y profesional');
 
-INSERT INTO categories (id,department_id,parent_id,title,icon,description) VALUES
-(1,  1, null, 'Cárnicos', 'cat_meats','Carnes y productos cárnicos, así como frutos del mar'),
-(2,  1, null, 'Bebidas', 'cat_beberages','Bebidas naturales e industriales'),
-(3,  1, null, 'Salsas', 'cat_sauces','Salsas para cocinar y para llevar directamente a la mesa'),
-(4,  1, null, 'Frescos del campo', 'cat_fresh','Productos agícolas recien traidos del campo'),
-(5,  1, null, 'De la granja', 'cat_farm','Productos láteos y huevos'),
-(6,  1, null, 'Panadería', 'cat_bakery','Productos horneados tanto salados como dulses'),
-(7,  1, null, 'Pre/elaborados', 'cat_processed', 'Productos agícolas pre-elaborados y elaborados'),
-(8,  2, null, 'Electrodomésticos', 'cat_appliances','decripcion'),
-(9,  2, null, 'Informática', 'cat_it','Computadoras profesionales y para la casa, equipos de comunicaciones móviles e Internet'),
-(10, 2, null, 'Sistemas fotovoltaicos', 'cat_solar','Sistemas de degeneración eléctrica mediante paneles solares. Uso residencial y profesional');
+INSERT INTO department_categories (department_id,category_id,icon) VALUES 
+(1, 1, 'cat_meats'),
+(1, 2, 'cat_beverages'),
+(1, 3, 'cat_sauces'),
+(1, 4, 'cat_fresh'),
+(1, 5, 'cat_farm'),
+(1, 6, 'cat_bakery'),
+(1, 7, 'cat_processed'),
+(2, 8, 'cat_appliances_general'),
+(2, 9, 'cat_it_business'),
+(2, 10, 'cat_power_business'),
+(3, 10, 'cat_power_business'),
+(3, 11, 'cat_aggregates'),
+(3, 12, 'cat_cements'),
+(6, 8, 'cat_appliances_home'),
+(6, 9, 'cat_it_home'),
+(6, 10, 'cat_power_home');
+
+INSERT INTO product_types (id, product,categories) VALUES 
+(0, 'generic','');
+INSERT INTO product_types (product,categories) VALUES 
+('food','1,3,4,5,6,7'),
+('beverages','2'),
+('computers','9'),
+('appliances','8'),
+('generators','10');
 
 
 INSERT INTO paymethods (id,mode,name,commission,logo) VALUES
@@ -314,10 +409,10 @@ INSERT INTO paymethods (id,mode,name,commission,logo) VALUES
 
 INSERT INTO countries (id,name) VALUES
 (1, 'Estados Unidos'),
-(2, 'Canadad'),
+(2, 'Canada'),
 (3, 'Mexico'),
 (4, 'Panama'),
-(5, 'Espana'),
+(5, 'España'),
 (6, 'Italia'),
 (7, 'Suiza');
 

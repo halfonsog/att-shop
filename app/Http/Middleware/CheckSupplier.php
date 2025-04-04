@@ -15,15 +15,9 @@ class CheckSupplier
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('usr_type') !== 'supplier') {
+        if (session('role') !== 'supplier') {
             abort(403, 'Unauthorized access');
         }
-        return $next($request);
-/*        
-        if (auth()->check() && auth()->user()->role === 'supplier') {
-            return $next($request);
-        }
-        return redirect('/')->with('error', 'Supplier access only');
-*/        
+        return $next($request);       
     }
 }

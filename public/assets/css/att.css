@@ -1,0 +1,116 @@
+.menu-chevron {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 6px;
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  transition: transform 0.2s ease;
+}
+
+/* Rotate chevron when dropdown is open */
+.dropdown-toggle.show .menu-chevron {
+  transform: rotate(180deg);
+}
+
+.offcanvas-departments {
+  width: 300px;
+}
+.search-expanded {
+  display: none;
+  border-top: 1px solid #dee2e6;
+}
+.delivery-row {
+  display: none;
+  background-color: #f8f9fa;
+  padding: 4px 0;
+  border-top: 1px solid #dee2e6;
+}
+/* Search box styles */
+.search-box {
+  border: 1px solid #ced4da;
+  border-radius: 20px;
+  overflow: hidden;
+  min-width: 200px; /* Minimum width */
+  flex-grow: 0.9; /* Allow to grow 90%*/
+  max-width: 600px; /* Maximum width */
+}
+.search-box input {
+  flex-grow: 1; /* Input takes available space */
+}
+@media (max-width: 992px) {
+  .nav-item-text {
+      display: none !important;
+  }
+  .delivery-desktop {
+      display: none !important;
+  }
+  .delivery-row {
+      display: block;
+  }
+  .departments-chevron {
+      display: none !important;
+  }
+  .account-name {
+      display: inline !important;
+  }
+  .search-box {
+      flex-grow: 1; /* Full width on mobile */
+      max-width: none;
+  }
+}
+@media (min-width: 992px) {
+  .delivery-mobile {
+      display: none !important;
+  }
+  .search-expanded {
+      display: none !important;
+  }
+  .search-container {
+      flex-grow: 0.9; /* Allow container to grow */
+      max-width: 600px; /* But not too much */
+      margin-right: auto;
+      margin-left: 1rem;
+  }
+}
+.navbar-top {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 4px 0;
+  flex-wrap: nowrap;
+}
+.navbar-top > * {
+  flex-shrink: 0; /* Prevent shrinking of other elements */
+}
+
+.product-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.text-dark-gray {
+  color: #495057;
+}
+
+.object-fit-contain {
+  object-fit: contain;
+}
+
+.fs-7 {
+  font-size: 0.875rem;
+}
+
+.fs-8 {
+  font-size: 0.75rem;
+}
+
+.ratio-1x1 {
+  --bs-aspect-ratio: 100%;
+}
