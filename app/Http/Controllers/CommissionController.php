@@ -8,7 +8,7 @@ class CommissionController extends Controller
 {
     public function index()
     {
-        if (session('user_type') !== 'admin') {
+        if (session('auth.role') !== 'admin') {
             abort(403);
         }
 

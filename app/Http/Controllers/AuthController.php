@@ -21,8 +21,18 @@ class AuthController extends Controller
         }
         $table= (str_ends_with($user->role,'admin') ?'admins' :$user->role .'s');
         $ent= DB::selectOne("SELECT * FROM " .$table." WHERE id = ?", [$user->ent_id]);
+        session([
+            'auth' => [
+                'usr' => $user->usr,
+                'ent_id' => $user->ent_id,
+                'role' => $ent->role,
+                'permissions' => $ent->permissions ?? [],
+                'name' => $ent->name
+            ]
+        ]);
+        // Regenerate session for security
+        $request->session()->regenerate();
 
-        session(['usr' => $user->usr, 'role' => $ent->role, 'ent_id' => $user->ent_id, 'permission' => $ent->permission, 'name' => $ent->name]);      
         return redirect('/')->with('success', 'Logged in!');
     }
 
@@ -64,9 +74,10 @@ class AuthController extends Controller
         }        
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        app('auth')->logout();
-        return redirect('/')->with('success', 'Logged out');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }

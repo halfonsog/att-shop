@@ -9,8 +9,12 @@ class CartController extends Controller
 {
   public function add(Request $request)
   {
-    if (session('usr_type') === 'supplier') {
-      abort(403, 'Suppliers cannot place orders');
+    $auth = session('auth');
+    if(!$auth){
+      return redirect('/login')->with('error', 'Por favor inicie sesión');
+    }
+    if ($auth['role'] !== 'customer') {
+      abort(403, 'Su usuario no tiene permitido hacer compras');
     }
 
     $productId = $request->input('product_id');
@@ -20,7 +24,7 @@ class CartController extends Controller
     $product = DB::selectOne("SELECT id FROM products WHERE id = ?", [$productId]);
 
     if (!$product) {
-      return response()->json(['error' => 'Product not found'], 404);
+      return response()->json(['error' => 'Producto no encontrado'], 404);
     }
 
     // Add to cart

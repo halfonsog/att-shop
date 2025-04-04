@@ -15,7 +15,7 @@ class CheckSupplier
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('role') !== 'supplier') {
+        if (session('auth.role') !== 'supplier') {
             abort(403, 'Unauthorized access');
         }
         return $next($request);       

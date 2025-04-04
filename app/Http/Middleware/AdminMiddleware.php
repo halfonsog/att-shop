@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
@@ -15,7 +16,14 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (!str_ends_with(session('role'), 'admin')) {
+        $auth = session('auth');
+        
+        // 1. Check if authenticated
+        if (!$auth) {
+            return redirect('/login')->with('error', 'Aceso restringido. Autentiquese');
+        }
+
+        if (!str_ends_with(session('auth.role'), 'admin')) {
             abort(403, 'Unauthorized access');
         }
 

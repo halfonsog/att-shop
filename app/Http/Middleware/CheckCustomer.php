@@ -15,7 +15,7 @@ class CheckCustomer
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('usr_type') !== 'customer') {
+        if (session('auth.role') !== 'customer') {
             abort(403, 'Unauthorized access');
         }
         return $next($request);

@@ -67,7 +67,7 @@ class SupplierController extends Controller
     }
 
     public function commissions($supplierId){
-    if (session('user_type') !== 'admin' && session('user_id') != $supplierId) {
+    if (session('auth.role') !== 'admin' && session('auth.ent_id') != $supplierId) {
         abort(403);
     }
     

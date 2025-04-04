@@ -53,11 +53,11 @@ class ProductController extends Controller
 
     public function manage()
     {
-        if (session('role') !== 'supplier') {
+        if (session('auth.role') !== 'supplier') {
             abort(403);
         }
 
-        $supplierId = session('user_id');
+        $supplierId = session('auth.ent_id');
         $products = DB::select("
         SELECT * FROM products 
         WHERE supplier_id = ?
@@ -69,7 +69,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        if (session('role') !== 'supplier') {
+        if (session('auth.role') !== 'supplier') {
             abort(403);
         }
 
@@ -78,7 +78,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        if (session('role') !== 'supplier') {
+        if (session('auth.role') !== 'supplier') {
             abort(403);
         }
 
@@ -102,7 +102,7 @@ class ProductController extends Controller
             $request->description,
             $request->price,
             $imagePath,
-            session('user_id')
+            session('auth.ent_id')
         ]);
 
         return redirect('/products/manage')->with('success', 'Product added!');

@@ -32,7 +32,8 @@ Route::middleware('auth')->group(function () {
 
 // For admin users only
 Route::prefix('admin')->group(function() {
-    Route::get('/', 'AdminController@dashboard')->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'dashboard']); // Main admin entry point
+    Route::get('/dashboard', [AdminController::class, 'dashboard']); // Also available explicitly
     
     // Products management
     Route::get('/products/pending', 'ProductController@pendingApproval');
