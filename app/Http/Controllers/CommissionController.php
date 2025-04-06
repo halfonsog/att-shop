@@ -25,7 +25,7 @@ class CommissionController extends Controller
 
     public function markAsPaid($id)
     {
-        if (session('user_type') !== 'admin') {
+        if (session('auth.role') !== 'admin') {
             abort(403);
         }
 
@@ -50,7 +50,7 @@ class CommissionController extends Controller
 
     public function processMonthlyPayments()
     {
-        if (session('user_type') !== 'admin') {
+        if (session('auth.role') !== 'admin') {
             abort(403);
         }
 

@@ -15,10 +15,11 @@ namespace App\Models{
 /**
  * 
  *
- * @property string $usr_id
- * @property string $usr_pwd
- * @property string|null $usr_type
+ * @property string $usr
+ * @property string $psw
  * @property int|null $ent_id
+ * @property string|null $role
+ * @property int|null $is_active
  * @property string|null $rep
  * @property string|null $psw_hint
  * @property \Illuminate\Support\Carbon $created_at
@@ -30,11 +31,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEntId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePsw($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePswHint($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRep($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrPwd($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsrType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsr($value)
  */
 	class User extends \Eloquent {}
 }

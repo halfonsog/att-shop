@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Middleware\AdminMiddleware;
 /*
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -11,7 +12,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CommissionController;
 */
-
+ 
 // Public routes
 Route::get('/', function () {
     return view('welcome');
@@ -31,9 +32,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // For admin users only
-Route::prefix('admin')->group(function() {
-    Route::get('/', [AdminController::class, 'dashboard']); // Main admin entry point
-    Route::get('/dashboard', [AdminController::class, 'dashboard']); // Also available explicitly
+Route::prefix('admin')->middleware([AdminMiddleware::class])->group(function() {
+    // All existing admin routes (unchanged)
+    Route::get('/', [AdminController::class, 'dashboard']);
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
     
     // Products management
     Route::get('/products/pending', 'ProductController@pendingApproval');

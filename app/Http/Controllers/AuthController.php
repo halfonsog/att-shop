@@ -15,26 +15,52 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $user = DB::selectOne("SELECT * FROM users WHERE usr = ?", [$request->usr]);
-        
-        if (!$user || !Hash::check($request->psw, $user->usr_psw)) {    //!password_verify($request->psw, $user->pwd)){
-            return back()->with('error', 'Invalid credentials');
-        }
-        $table= (str_ends_with($user->role,'admin') ?'admins' :$user->role .'s');
-        $ent= DB::selectOne("SELECT * FROM " .$table." WHERE id = ?", [$user->ent_id]);
-        session([
-            'auth' => [
+        if ($user && Hash::check($request->psw, $user->psw)) 
+        {
+            //A los beneficiarios se le hace una comprobacion por codigo en su cellular
+            //Estudiar como implementarlarlo
+
+            // Start session
+            session_start();
+            
+            $ent= DB::selectOne("SELECT * FROM {$user->role}s WHERE id = ?", [$user->ent_id]);
+
+            session([
+              'auth' => [
                 'usr' => $user->usr,
                 'ent_id' => $user->ent_id,
-                'role' => $ent->role,
+                'role' => $user->role,
                 'permissions' => $ent->permissions ?? [],
                 'name' => $ent->name
-            ]
-        ]);
-        // Regenerate session for security
-        $request->session()->regenerate();
+              ],
+              'last_activity' => time()
+            ]);
+ 
+            // Regenerate session for security
+            $request->session()->regenerate();
 
-        return redirect('/')->with('success', 'Logged in!');
+            $url= '';
+            switch ($user->role) {
+                case 'customer':
+                //case 'recipient':
+                    $url= '/';
+                    break;
+                case 'supplier':
+                    $url= '/supplier';
+                    break;
+                case 'transporter':
+                    $url= '/transporter';
+                    break;
+                case 'admin':
+                    $url= '/admin';
+                    break;
+            }
+            if($url !== '') return redirect($url)->with('success', 'Logged in!');
+        }
+        return back()->with('error', 'Credenciales invalidas');
+
     }
+
 
     public function showRegister()
     {

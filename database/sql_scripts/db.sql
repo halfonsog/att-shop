@@ -50,7 +50,7 @@ CREATE TABLE users (
     usr VARCHAR(50) PRIMARY KEY,
     psw VARCHAR(255) NOT NULL,
     ent_id INT,
-    role ENUM('customer','supplier','transporter','admin','super_admin') DEFAULT 'customer',
+    role ENUM('customer','supplier','transporter','admin') DEFAULT 'customer',
     is_active BOOLEAN DEFAULT FALSE,
     rep ENUM('cfo','cco') DEFAULT NULL,
     psw_hint VARCHAR(100),
@@ -345,9 +345,8 @@ LEFT JOIN
 
 INSERT INTO admins (id,name,permissions,phone) VALUES
 (1, 'Administrador general', '{"*": true}', '59874218');
-INSERT INTO users (usr, psw, ent_id, role) VALUES 
-('halfonsog@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 'super_admin' );
-
+INSERT INTO users (usr, psw, ent_id, role, is_active, psw_hint) VALUES 
+('halfonsog@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1,'admin', 1, 'Just password as always!');
 
 INSERT INTO departments (id,title,icon,description) VALUES
 (1, 'Alimentos', 'dep_food', 'Alimentos frescos y procesados'),
