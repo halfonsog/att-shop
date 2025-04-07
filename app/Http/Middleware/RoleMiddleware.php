@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Services\AuthService;
 
 class RoleMiddleware
 {
@@ -14,21 +15,16 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role)
     {
+        $authService = app(AuthService::class);
+    
+        if (!$authService->isLoggedIn($role)) {
+            return redirect('/login');
+        }
         // Check if user has the required role
-        if (session('auth.role') !== $role) {
-            abort(403, 'No tiene acceso a esta área');
-        }
-        
-        // Additional validation against database (recommended)
-        $user = DB::table('users')
-                ->where('id', session('auth.user_id'))
-                ->where('role', $role)
-                ->first();
-                
-        if (!$user) {
-            session()->forget('auth');
+        if (!$authService->verifyUserRole($role)) {
+            $authService->logout();
             return redirect('/login')->with('error', 'Credenciales inválidas');
-        }
+       }
 
         return $next($request);
     }

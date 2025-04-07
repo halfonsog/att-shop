@@ -20,9 +20,6 @@ class AuthController extends Controller
             //A los beneficiarios se le hace una comprobacion por codigo en su cellular
             //Estudiar como implementarlarlo
 
-            // Start session
-            session_start();
-            
             $ent= DB::selectOne("SELECT * FROM {$user->role}s WHERE id = ?", [$user->ent_id]);
 
             session([
