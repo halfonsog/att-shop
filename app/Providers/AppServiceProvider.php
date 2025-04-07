@@ -3,14 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Services\AuthService;
 
 class AppServiceProvider extends ServiceProvider
 {
-/**
-     * The path to the "home" route for your application.
+    /**
+     * Path to redirect after authentication.
+     * Dynamically handled in AuthController
      */
-    public const HOME = '/home';
-
+    public const HOME = '/dashboard'; // Fallback for unauthenticated
+    
     /**
      * The controller namespace for the application.
      */
@@ -21,13 +23,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(AuthService::class, function () {
+            return new AuthService();
+        });
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
     }
+  
 }

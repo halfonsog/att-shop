@@ -39,27 +39,33 @@ class AuthService
 
     /**
      * Validate login credentials
+     * returns role or null
      */
-    public function attemptLogin(string $email, string $password): ?array
+    public function attemptLogin(string $id, string $password): string
     {
-        $user = DB::table('users')
-            ->where('email', $email)
-            ->first();
+      $user = DB::selectOne("SELECT * FROM users WHERE usr = ?", [$id]);
+      if ($user && Hash::check($password, $user->psw)) 
+      {
+        //A los beneficiarios se le hace una comprobacion por codigo en su cellular
+        //Estudiar como implementarlarlo
 
-        if (!$user || !Hash::check($password, $user->password)) {
-            return null;
-        }
+        $ent= DB::selectOne("SELECT * FROM {$user->role}s WHERE id = ?", [$user->ent_id]);
 
-        $roleTable = str_ends_with($user->role, 'admin') ? 'admins' : $user->role.'s';
-        $entity = DB::table($roleTable)
-            ->where('id', $user->ent_id)
-            ->first();
+        session([
+          'auth' => [
+            'usr' => $user->usr,
+            'ent_id' => $user->ent_id,
+            'role' => $user->role,
+            'permissions' => $ent->permissions ?? [],
+            'name' => $ent->name
+          ],
+          'last_activity' => time()
+        ]);
 
-        return [
-            'user_id' => $user->id,
-            'role' => $entity->role,
-            'name' => $entity->name
-        ];
+        return $user->role;
+      }
+      return '';
+
     }
 
     /**
@@ -77,6 +83,40 @@ class AuthService
   public function logout(): void
   {
       session()->forget(['auth', 'last_activity']);
+  }
+
+  public function requestPasswordReset(string $email): bool {
+/*
+   $user = DB::table('users')
+        ->where('reset_token', $token)
+        ->where('reset_token_expires_at', '>', now())
+        ->first();
+
+ */
+    return false;
+
+  }
+
+  public function resetPassword(string $token, string $password): bool {
+    
+    /*
+    $user = DB::table('users')
+        ->where('reset_token', $request->token)
+        ->where('reset_token_expires_at', '>', now())
+        ->first();
+    
+    if (!$user) abort(400, 'Invalid or expired token');
+    
+    DB::table('users')
+        ->where('id', $user->id)
+        ->update([
+            'password' => Hash::make($request->password),
+            'reset_token' => null,
+            'reset_token_expires_at' => null
+        ]);
+
+    */
+    return false;
   }
 
   /**

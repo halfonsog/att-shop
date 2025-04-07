@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Services\AuthService;
+
 
 class AuthController extends Controller
 {
@@ -14,38 +16,24 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $user = DB::selectOne("SELECT * FROM users WHERE usr = ?", [$request->usr]);
-        if ($user && Hash::check($request->psw, $user->psw)) 
-        {
-            //A los beneficiarios se le hace una comprobacion por codigo en su cellular
-            //Estudiar como implementarlarlo
+        $authService = app(AuthService::class);
 
-            $ent= DB::selectOne("SELECT * FROM {$user->role}s WHERE id = ?", [$user->ent_id]);
-
-            session([
-              'auth' => [
-                'usr' => $user->usr,
-                'ent_id' => $user->ent_id,
-                'role' => $user->role,
-                'permissions' => $ent->permissions ?? [],
-                'name' => $ent->name
-              ],
-              'last_activity' => time()
-            ]);
- 
-            // Regenerate session for security
-            $request->session()->regenerate();
-
-            return match($user->role) {
-                'admin' => redirect('/admin'),
-                'supplier' => redirect('/supplier/dashboard'),
-                'transporter' => redirect('/transporter/dashboard'),
-                //'customer' => redirect('/customer/dashboard'),
-                //'recipient' => redirect('/recipient/dashboard'),
-                default => redirect('/')
-            };
+        $role= $authService->attemptLogin($request->usr, $request->psw);
+        if($role === ''){
+            return back()->with('error', 'Credenciales invalidas');
         }
-        return back()->with('error', 'Credenciales invalidas');
+
+        // Regenerate session for security
+        $request->session()->regenerate();
+
+        return match($role) {
+            'admin' => redirect('/admin'),
+            'supplier' => redirect('/supplier/dashboard'),
+            'transporter' => redirect('/transporter/dashboard'),
+            //'customer' => redirect('/customer/dashboard'),
+            //'recipient' => redirect('/recipient/dashboard'),
+            default => redirect('/')
+        };
 
     }
 
@@ -59,8 +47,8 @@ class AuthController extends Controller
     {
         if ($request->input('typ') == 'customer') {
             $request->validate([
-                'usr' => 'required|email|unique:users,usr_id',
-                'psw' => 'required|string|min:6',
+                'usr' => 'required|email|unique:users,usr',
+                'psw' => 'required|string|min:8',
                 'psw_hint' => 'required|string|max:100',
                 'name' => 'required|string|min:3|max:150',
                 'phone' => 'required|regex:regex:/^+?\d{7,15}$/',

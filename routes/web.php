@@ -29,6 +29,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
+Route::middleware('throttle:3,1')->group(function () {
+    Route::post('/password/reset', [AuthController::class, 'requestReset']);
+});
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // For authenticated users only
 Route::middleware('auth')->group(function () {
