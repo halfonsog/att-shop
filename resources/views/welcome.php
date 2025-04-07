@@ -64,7 +64,7 @@ $products= [
 
                 <!-- Account -->
                 <div class="me-3">
-                    <a class="nav-link" href="/customer">
+                    <a class="nav-link" href="/customer/dashboard">
                         <i class="bi bi-person-fill"></i>
                         <span class="account-name ms-1">huesped</span>
                         <span class="menu-chevron"></span><!--i class="bi bi-chevron-down ms-1"></i-->

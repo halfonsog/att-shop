@@ -39,23 +39,14 @@ class AuthController extends Controller
             // Regenerate session for security
             $request->session()->regenerate();
 
-            $url= '';
-            switch ($user->role) {
-                case 'customer':
-                //case 'recipient':
-                    $url= '/';
-                    break;
-                case 'supplier':
-                    $url= '/supplier';
-                    break;
-                case 'transporter':
-                    $url= '/transporter';
-                    break;
-                case 'admin':
-                    $url= '/admin';
-                    break;
-            }
-            if($url !== '') return redirect($url)->with('success', 'Logged in!');
+            return match($user->role) {
+                'admin' => redirect('/admin'),
+                'supplier' => redirect('/supplier/dashboard'),
+                'transporter' => redirect('/transporter/dashboard'),
+                //'customer' => redirect('/customer/dashboard'),
+                //'recipient' => redirect('/recipient/dashboard'),
+                default => redirect('/')
+            };
         }
         return back()->with('error', 'Credenciales invalidas');
 

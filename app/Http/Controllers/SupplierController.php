@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
+    public function dashboard()
+    {
+        // Add any customer-specific data here
+        return view('suppliers/dashboard');
+    }
+
     public function index()
     {
         $suppliers = DB::select("SELECT * FROM suppliers ORDER BY name");

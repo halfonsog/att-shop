@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 /*
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -45,3 +46,25 @@ Route::prefix('admin')->middleware([AdminMiddleware::class])->group(function() {
     Route::get('/suppliers', 'SupplierController@list');
 });
 
+Route::prefix('customer')->middleware([RoleMiddleware::class.':customer'])->group(function() {
+    Route::get('/dashboard', [CustomerController::class, 'dashboard']);
+    // Add other customer routes here
+});
+
+// Supplier routes
+Route::prefix('supplier')->middleware([RoleMiddleware::class.':supplier'])->group(function() {
+    Route::get('/dashboard', [SupplierController::class, 'dashboard']);
+    // Add other supplier routes here
+});
+
+// Transporter routes
+Route::prefix('transporter')->middleware([RoleMiddleware::class.':transporter'])->group(function() {
+    Route::get('/dashboard', [TransporterController::class, 'dashboard']);
+    // Add other transporter routes here
+});
+
+// Recipient routes
+Route::prefix('recipient')->middleware([RoleMiddleware::class.':recipient'])->group(function() {
+    Route::get('/dashboard', [RecipientController::class, 'dashboard']);
+    // Add other recipient routes here
+});
