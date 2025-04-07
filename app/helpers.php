@@ -20,10 +20,10 @@ function view_include($path, $data = []) {
 }
 
 function currentUser() {
-    if (!isset($_SESSION['user'])) return null;
+    if (!session('user')) return null;
     
     // Get basic info from session
-    $user = $_SESSION['user'];
+    $user = session('user');
     
     // Fetch additional details from DB if needed
     $entity= (array) DB::selectOne("SELECT * FROM {$user->role}s WHERE id = ?", [$user->ent_id]);  // [$user['ent_id']]);

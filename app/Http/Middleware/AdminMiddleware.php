@@ -16,10 +16,6 @@ class AdminMiddleware
    */
   public function handle($request, Closure $next)
   {
-    // Start session if not exists
-    //if (session_status() === PHP_SESSION_NONE) {
-    //    session_start();
-    //}
 
     // Session timeout check (1 hour)
     $lastActivity = session('last_activity') ?? 0;

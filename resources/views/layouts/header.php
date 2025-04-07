@@ -47,13 +47,6 @@
     </div>
   </div>
 
-@supplier
-    <!-- Show supplier dashboard link -->
-@endsupplier
-
-@customer
-    <!-- Show cart button -->
-@endcustomer
     
   </header>
   <main>

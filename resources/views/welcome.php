@@ -24,7 +24,7 @@ $products= [
 
     <style>
 
-</style>
+    </style>
 
 </head>
 <body>
@@ -64,7 +64,7 @@ $products= [
 
                 <!-- Account -->
                 <div class="me-3">
-                    <a class="nav-link" href="#account">
+                    <a class="nav-link" href="/customer">
                         <i class="bi bi-person-fill"></i>
                         <span class="account-name ms-1">huesped</span>
                         <span class="menu-chevron"></span><!--i class="bi bi-chevron-down ms-1"></i-->
@@ -139,7 +139,7 @@ $products= [
         <div class="row">
             <div class="col-12">
             <div class="d-flex align-items-center justify-content-between border-bottom pb-3 pb-md-4 mb-3 mb-lg-4">
-                <h2 class="h3 mb-0">Productos con descuentos</h2>
+                <h2 class="h3 mb-0">Rebajas</h2>
                 <div class="nav ms-3">
                 <a class="nav-link animate-underline px-0 py-2" href="shop-catalog-grocery.html">
                     <span class="animate-target text-nowrap">Ver todos</span>
@@ -201,7 +201,7 @@ $products= [
 
     </main>
     <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="/lib/bootstrap-5.3.3/bootstrap.bundle.min.js"></script>
+    <script src="/lib/bootstrap-5.3.3/bootstrap.min.js"></script>
     <script src="/lib/swiper/swiper-bundle.min.js"></script>
     <script src="/js/att.js"></script>
     
