@@ -11,7 +11,7 @@ class AppServiceProvider extends ServiceProvider
      * Path to redirect after authentication.
      * Dynamically handled in AuthController
      */
-    public const HOME = '/dashboard'; // Fallback for unauthenticated
+    public const HOME = '/'; // Fallback for unauthenticated
     
     /**
      * The controller namespace for the application.

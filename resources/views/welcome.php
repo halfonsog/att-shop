@@ -22,10 +22,6 @@ $products= [
     <link rel="stylesheet" href="/lib/swiper/swiper-bundle.min.css">
     <link href="/assets/css/att.css" rel="stylesheet">
 
-    <style>
-
-    </style>
-
 </head>
 <body>
     <!-- Top Navigation Row -->

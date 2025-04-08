@@ -17,29 +17,19 @@ class ApplyCSP
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 1. Intercept ALL output
+        ob_start();
+            
+        // 2. Get response
         $response = $next($request);
 
-        // Basic CSP Policy (customize as needed)
-        $cspPolicy = implode('; ', [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'", // Required for Laravel Mix/Vite
-            "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data:",
-            "font-src 'self'",
-            "connect-src 'self'", // Blocks external calls like aitoria.ai
-            "frame-src 'none'",
-            "object-src 'none'"
-        ]);
+        // 3. CLEAR all existing headers
+        header_remove(); 
 
-        $response->headers->set(
-            'Content-Security-Policy', 
-            $cspPolicy,
-            true // Replace existing headers
-        );
+        // 4. Set your CSP
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'");
 
-        // For reporting mode (temporary during development)
-        // $response->headers->set('Content-Security-Policy-Report-Only', $cspPolicy);
-
+        // 5. Return clean response
         return $response;
     }
 }

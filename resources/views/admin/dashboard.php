@@ -1,8 +1,11 @@
 <?php
-view_include('layouts/header', [
-    'title' => 'Customer Dashboard', 'user' => currentUser()
+view_include('layouts/header2', [
+    'title' => 'Amin Dashboard'
 ]);
 ?>
+
+<main class="content-wrapper">
+
 <div class="admin_dashboard-page">
     <h1>Panel del Administrador</h1>
     <br/>
@@ -21,4 +24,5 @@ view_include('layouts/header', [
         <p>No hay datos disponibles</p>
     <?php endif; ?>
 </div>
-<?php view_include('layouts/footer'); ?>
+</main>
+<?php view_include('layouts/footer2'); ?>

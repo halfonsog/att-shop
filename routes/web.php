@@ -37,7 +37,11 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,
 // For authenticated users only
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
+    Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('role:admin');
+    Route::get('/supplier', [CustomerController::class, 'dashboard'])->middleware('role:supplier');
+    Route::get('/customer', [CustomerController::class, 'dashboard'])->middleware('role:customer');
+    Route::get('/transporter', [AdminController::class, 'dashboard'])->middleware('role:transporter');
+    Route::get('/recipient', [AdminController::class, 'dashboard'])->middleware('role:recipient');});
 
 // For admin users only
 Route::prefix('admin')->middleware([AdminMiddleware::class])->group(function() {
